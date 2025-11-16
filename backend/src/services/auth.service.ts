@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
-import { User } from '../users/user.entity';
-import { GoogleUser } from './interfaces/google-user.interface';
+import { UsersService } from '../services/users.service';
+import { User } from '../entities/user.entity';
+import { GoogleUser } from '../interfaces/google-user.interface';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 
