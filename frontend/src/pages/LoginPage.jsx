@@ -2,10 +2,11 @@ import React from 'react';
 
 const LoginPage = () => {
   const handleGoogleLogin = () => {
-    // Force Google account picker by adding prompt=select_account
-    // This ensures user can choose ANY account, not just device login
+    // Force Google account picker and consent screen to ensure we get a refresh token
     const backendUrl = 'http://localhost:3000';
-    window.location.href = `${backendUrl}/auth/google?prompt=select_account`;
+    // prompt=select_account consent: Forces account picker AND consent screen (critical for refresh token)
+    // access_type=offline: Requests a refresh token
+    window.location.href = `${backendUrl}/auth/google?access_type=offline&prompt=select_account%20consent`;
   };
 
   return (
