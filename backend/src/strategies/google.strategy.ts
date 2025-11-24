@@ -10,7 +10,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: process.env.GOOGLE_REDIRECT_URI,
       accessType: 'offline',
-      prompt: 'select_account consent', // Forces account picker + consent screen
+      prompt: 'select_account consent', // Forces account picker + consent screen (required for refresh token)
       scope: [
         'profile',
         'email',
