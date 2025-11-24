@@ -12,7 +12,7 @@ export class GoogleFitService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-  ) {}
+  ) { }
 
   /**
    * Refreshes the Google OAuth access token using a refresh token
@@ -27,7 +27,7 @@ export class GoogleFitService {
 
     try {
       this.logger.log('Refreshing Google access token...');
-      
+
       const response = await axios.post('https://oauth2.googleapis.com/token', {
         client_id: process.env.GOOGLE_CLIENT_ID,
         client_secret: process.env.GOOGLE_CLIENT_SECRET,
@@ -37,7 +37,7 @@ export class GoogleFitService {
 
       const newAccessToken = response.data.access_token;
       this.logger.log('Successfully refreshed access token');
-      
+
       return newAccessToken;
     } catch (error) {
       this.logger.error('Failed to refresh access token:', error.response?.data || error.message);
@@ -147,29 +147,38 @@ export class GoogleFitService {
       const accessToken = await this.getValidAccessToken(user);
       return await this.fetchSteps(accessToken, startMillis, endMillis);
     } catch (error) {
-      // If token expired, refresh and retry
-      if (error.message === 'TOKEN_EXPIRED' && user.googleRefreshToken) {
-        try {
-          this.logger.log(`Attempting to refresh token for user ${user.id}`);
-          
-          // Refresh the access token
-          const newAccessToken = await this.refreshAccessToken(user.googleRefreshToken);
-          
-          // Update user's access token in database
-          user.googleAccessToken = newAccessToken;
-          await this.usersRepository.save(user);
-          
-          this.logger.log(`Token refreshed successfully for user ${user.id}`);
-          
-          // Retry the request with new token
-          return await this.fetchSteps(newAccessToken, startMillis, endMillis);
-        } catch (refreshError) {
-          this.logger.error(
-            `Failed to refresh token for user ${user.id}:`,
-            refreshError.message,
-          );
+      // If token expired, handle refresh logic
+      if (error.message === 'TOKEN_EXPIRED') {
+        if (user.googleRefreshToken) {
+          try {
+            this.logger.log(`Attempting to refresh token for user ${user.id}`);
+
+            // Refresh the access token
+            const newAccessToken = await this.refreshAccessToken(user.googleRefreshToken);
+
+            // Update user's access token in database
+            user.googleAccessToken = newAccessToken;
+            await this.usersRepository.save(user);
+
+            this.logger.log(`Token refreshed successfully for user ${user.id}`);
+
+            // Retry the request with new token
+            return await this.fetchSteps(newAccessToken, startMillis, endMillis);
+          } catch (refreshError) {
+            this.logger.error(
+              `Failed to refresh token for user ${user.id}:`,
+              refreshError.message,
+            );
+            throw new HttpException(
+              'Failed to refresh token. Please log in again.',
+              HttpStatus.UNAUTHORIZED,
+            );
+          }
+        } else {
+          // No refresh token available
+          this.logger.warn(`User ${user.id} has expired access token and NO refresh token`);
           throw new HttpException(
-            'Failed to refresh token and fetch steps. User may need to re-authenticate.',
+            'Session expired. Please log out and log in again.',
             HttpStatus.UNAUTHORIZED,
           );
         }

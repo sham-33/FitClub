@@ -34,7 +34,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     console.log('Refresh Token received:', !!refreshToken);
     console.log('Access Token length:', accessToken?.length);
     console.log('Refresh Token length:', refreshToken?.length);
-    
+
     const googleUser = {
       profile: {
         id: profile.id,
@@ -53,5 +53,12 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     });
 
     done(null, googleUser);
+  }
+
+  authorizationParams(): { [key: string]: string } {
+    return {
+      access_type: 'offline',
+      prompt: 'select_account consent',
+    };
   }
 }
