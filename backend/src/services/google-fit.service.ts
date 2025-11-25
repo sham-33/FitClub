@@ -14,9 +14,6 @@ export class GoogleFitService {
     private usersRepository: Repository<User>,
   ) { }
 
-  /**
-   * Refreshes the Google OAuth access token using a refresh token
-   */
   async refreshAccessToken(refreshToken: string): Promise<string> {
     if (!refreshToken) {
       throw new HttpException(
@@ -48,10 +45,6 @@ export class GoogleFitService {
     }
   }
 
-  /**
-   * Gets a valid access token for the user
-   * Automatically refreshes if the current token is expired
-   */
   async getValidAccessToken(user: User): Promise<string> {
     if (!user.googleAccessToken) {
       throw new HttpException(
@@ -64,10 +57,6 @@ export class GoogleFitService {
     return user.googleAccessToken;
   }
 
-  /**
-   * Fetches step count from Google Fit API for a specific time range
-   * Throws TOKEN_EXPIRED error if the token is invalid (401)
-   */
   async fetchSteps(
     accessToken: string,
     startMillis: number,
