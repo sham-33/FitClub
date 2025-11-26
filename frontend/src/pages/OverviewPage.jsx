@@ -177,7 +177,7 @@ const OverviewPage = ({ userId }) => {
     <div className="container mx-auto px-6 py-8">
       <div className="max-w-6xl mx-auto">
         {/* Enhanced Debug Info */}
-        {process.env.NODE_ENV === 'development' && (
+        {/* {process.env.NODE_ENV === 'development' && (
           <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm">
             <p className="font-bold mb-2">🐛 Debug Info:</p>
             <p>Step History Count: <strong>{stepHistory.length}</strong></p>
@@ -196,7 +196,7 @@ const OverviewPage = ({ userId }) => {
               💡 Check browser console (F12) for detailed date comparison logs
             </p>
           </div>
-        )}
+        )} */}
 
         {/* Sync Button and Messages */}
         <div className="mb-6 flex justify-between items-center">
